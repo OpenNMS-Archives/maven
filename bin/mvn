@@ -1,22 +1,41 @@
 #!/bin/sh
 # ----------------------------------------------------------------------------
-#  Copyright 2001-2004 The Apache Software Foundation.
-#  
-#  Licensed under the Apache License, Version 2.0 (the "License");
-#  you may not use this file except in compliance with the License.
-#  You may obtain a copy of the License at
-#  
-#       http://www.apache.org/licenses/LICENSE-2.0
-#  
-#  Unless required by applicable law or agreed to in writing, software
-#  distributed under the License is distributed on an "AS IS" BASIS,
-#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-#  See the License for the specific language governing permissions and
-#  limitations under the License.
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
 # ----------------------------------------------------------------------------
 
 #   Copyright (c) 2001-2002 The Apache Software Foundation.  All rights
 #   reserved.
+
+# ----------------------------------------------------------------------------
+# Maven2 Start Up Batch script
+#
+# Required ENV vars:
+# ------------------
+#   JAVA_HOME - location of a JDK home dir
+#
+# Optional ENV vars
+# -----------------
+#   M2_HOME - location of maven2's installed home dir
+#   MAVEN_OPTS - parameters passed to the Java VM when running Maven
+#     e.g. to debug Maven itself, use
+#       set MAVEN_OPTS=-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000
+# ----------------------------------------------------------------------------
+
 
 QUOTED_ARGS=""
 while [ "$1" != "" ] ; do
@@ -37,8 +56,10 @@ fi
 # OS specific support.  $var _must_ be set to either true or false.
 cygwin=false;
 darwin=false;
+mingw=false
 case "`uname`" in
   CYGWIN*) cygwin=true ;;
+  MINGW*) mingw=true;;
   Darwin*) darwin=true 
            if [ -z "$JAVA_VERSION" ] ; then
              JAVA_VERSION="CurrentJDK"
@@ -52,21 +73,12 @@ case "`uname`" in
 esac
 
 if [ -z "$JAVA_HOME" ] ; then
-  if [ -f /etc/gentoo-release ] ; then
+  if [ -r /etc/gentoo-release ] ; then
     JAVA_HOME=`java-config --jre-home`
   fi
 fi
 
 if [ -z "$M2_HOME" ] ; then
-  # try to find MAVEN
-  if [ -d /opt/m2 ] ; then
-    MAVEN_HOME=/opt/m2
-  fi
-
-  if [ -d "$HOME/m2" ] ; then
-    MAVEN_HOME="$HOME/m2"
-  fi
-
   ## resolve links - $0 may be a link to maven's home
   PRG="$0"
 
@@ -100,6 +112,15 @@ if $cygwin ; then
     JAVA_HOME=`cygpath --unix "$JAVA_HOME"`
   [ -n "$CLASSPATH" ] &&
     CLASSPATH=`cygpath --path --unix "$CLASSPATH"`
+fi
+
+# For Migwn, ensure paths are in UNIX format before anything is touched
+if $mingw ; then
+  [ -n "$M2_HOME" ] &&
+    M2_HOME="`(cd "$M2_HOME"; pwd)`"
+  [ -n "$JAVA_HOME" ] &&
+    JAVA_HOME="`(cd "$JAVA_HOME"; pwd)`"
+  # TODO classpath?
 fi
 
 if [ -z "$JAVACMD" ] ; then
@@ -139,7 +160,7 @@ fi
 
 exec "$JAVACMD" \
   $MAVEN_OPTS \
-  -classpath "${M2_HOME}"/core/boot/classworlds-*.jar \
+  -classpath "${M2_HOME}"/boot/classworlds-*.jar \
   "-Dclassworlds.conf=${M2_HOME}/bin/m2.conf" \
   "-Dmaven.home=${M2_HOME}"  \
   ${CLASSWORLDS_LAUNCHER} $QUOTED_ARGS
